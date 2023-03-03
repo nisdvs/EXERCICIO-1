@@ -1,0 +1,144 @@
+create database warecasa;
+use warecasa;
+
+create table productlines(
+productline bigint not null auto_increment,
+textDescription varchar (100) not null,
+htmlDescription varchar (100) not null,
+image text not null,
+primary key (productline)
+);
+
+create table products(
+productCode bigint not null auto_increment,
+productName varchar (100) not null,
+productLine bigint not null,
+productScale float not null,
+productDescription varchar (100) not null,
+quantityinStock bigint not null,
+buyPrice float not null, 
+MSRP bigint,
+primary key (productCode),
+foreign key (productLine) references productlines(productline)
+);
+drop table products;
+drop table productlines;
+create table orderdetails(
+orderNumber bigint not null,
+productCode bigint not null,
+quantityOrdered bigint not null,
+priceEach float not null,
+orderLineNumber bigint not null, 
+primary key (orderNumber),
+foreign key (productCode) references products(productCode),
+foreign key (orderNumber) references orders(orderNumber)
+);
+
+create table orders(
+orderNumber bigint not null auto_increment,
+orderDate date not null,
+requiredDate date not null,
+shippedDate date not null,
+status bigint not null,
+comments varchar (100) not null,
+customerNumber bigint not null,
+primary key (orderNumber),
+foreign key (customerNumber) references customers(customerNumber)
+);
+
+create table customers(
+customerNumber bigint not null auto_increment,
+customerName varchar (100) not null,
+contactLastName varchar (100) not null,
+contactFirstName varchar (100) not null,
+phone bigint not null,
+adressLine1 varchar (100) not null,
+adressLine2 varchar (100) not null,
+city varchar (100) not null,
+state varchar (100) not null,
+postalCode bigint not null,
+country varchar (100) not null,
+salesRepEmployeeNumber bigint not null,
+creditLimit bigint not null,
+primary key (customerNumber),
+foreign key (salesRepEmployeeNumber) references employees(employeeNumber)
+);
+
+create table payments(
+customerNumber bigint not null,
+checkNumber bigint not null auto_increment,
+paymentDate date not null,
+amount bigint not null,
+primary key (checkNumber),
+foreign key (customerNumber) references customers(customerNumber)
+);
+
+create table employees(
+employeeNumber bigint not null auto_increment,
+lastName bigint not null,
+firstName bigint not null,
+extension bigint not null,
+email varchar (100)  not null,
+officeCode bigint not null,
+reportsTo varchar (100) not null,
+jobTitle bigint not null,
+primary key (employeeNumber),
+foreign key (officeCode) references offices(officeCode)
+);
+
+create table offices(
+officeCode bigint not null auto_increment,
+city varchar (100) not null,
+phone bigint not null,
+adressLine1 varchar (100) not null,
+adressLine2 varchar (100) not null,
+state varchar (100) not null,
+country varchar (100) not null,
+postalCode bigint not null,
+territory varchar (100) not null,
+primary key (officeCode)
+);
+
+INSERT INTO productlines (productline, textDescription, htmlDescription, image) VALUES
+(1, 'Eletrônicos', 'Nossos produtos eletrônicos incluem desde equipamentos de áudio até consoles de jogos.', '<https://via.placeholder.com/150x150.png?text=Eletrônicos>'),
+(2, 'Itens Para Casa', 'Nossos produtos para casa incluem móveis, decorações e mais.', '<https://via.placeholder.com/150x150.png?text=Itens+Para+Casa>'),
+(3, 'Roupas', 'Nossa linha de roupas inclui uma grande variedade de estilos e tamanhos.', '<https://via.placeholder.com/150x150.png?text=Roupas>');
+
+INSERT INTO payments (customerNumber, checkNumber, paymentDate, amount)
+VALUES
+  (1001, '123456', '2021-08-01 12:34:56', 100.00),
+  (1002, '123457', '2021-08-02 10:20:30', 200.00),
+  (1003, '123458', '2021-08-03 15:45:00', 300.00);
+
+
+INSERT INTO offices (officeCode, phone, addressline1, addressline2, city, state, country, postalCode, territory) VALUES
+(1, '(19) 4256-7890', 'Rua São João, 20.', 'Sala 101', 'Piracicaba', 'SP', 'BR', '13060295', 'Sudeste'),
+(2, '(19) 6254-3210', 'Rua São Pedro, 256.', '3º andar', 'São Paulo', 'SP', 'BR', '13560294', 'Suedeste'),
+(3, '(19) 1223-4567', 'Avenida Pedro Cabral', 'AP 125', 'Campinas', 'SP', 'BR', '13064752', 'Suedeste');
+
+INSERT INTO employees (employeesName, lastName, firstName, extension, email, officeCode, reportTo, jobTitle) VALUES
+(1, 'Smith', 'John', 'x1234', 'john.smith@example.com', 1, NULL, 'CEO'),
+(2, 'Johnson', 'Jane', 'x2345', 'jane.johnson@example.com', 1, 1, 'COO'),
+(3, 'Williams', 'James', 'x3456', 'james.williams@example.com', 1, 1, 'CFO');
+
+INSERT INTO products (productCode, productName, productLine, productScale, productVendor, productDescription, quantityInStock, buyPrice, MSRP) VALUES
+(1, 'TV 65 polegadas 4K Ultra HD', 1, '1:10', 'Samsung', 'Desfrute de seus filmes e programas de TV favoritos com detalhes e clareza impressionantes.', 10, 700.00, 1000.00),
+(2, 'Poltrona de couro', 2, '1:6', 'Ashley Furniture', 'Relaxe com estilo nesta confortável poltrona de couro.', 5, 500.00, 750.00),
+(3, 'Camisa Social Masculina', 3, '1:12', 'Calvin Klein', 'Fique elegante e estiloso com esta clássica camisa social.', 20, 50.00, 75.00);
+
+INSERT INTO order_details (orderNumer, productCode, quantityOrdered, priceEach, orderLineNumber) VALUES
+(1, 10001, 1, 1, 699.99, 1),
+(2, 10001, 2, 2, 499.99, 2),
+(3, 10002, 3, 3, 49.99, 1);
+
+INSERT INTO orders (orderNumber, orderDate, requiredDate, shippedDate, status, comments, customer_number) VALUES
+(10001, '2021-08-01', '2021-08-07', '2021-08-05', 'Enviado', NULL, 1001),
+(10002, '2021-08-02', '2021-08-09', NULL, 'Pendente', NULL, 1002),
+(10003, '2021-08-03', '2021-08-10', NULL, 'Pendente', NULL, 1003);
+
+INSERT INTO customers (customerNumber, customerName, contactLastName, contactFirstName, phone, addressLine1, addressLine2, city, state, postalCode, country, salesRepEmployeeNumber, creditLimit)
+VALUES
+  (1001, 'Maria Silva', 'Silva', 'Maria', '+55 11 1234-5678', 'Av. Paulista, 123', 'Apto 456', 'São Paulo', 'SP', '01311-200', 'Brasil', 1, 10000),
+  (1002, 'João Santos', 'Santos', 'João', '+55 21 9876-5432', 'Rua da Praia, 456', NULL, 'Rio de Janeiro', 'RJ', '20010-010', 'Brasil', 2, 20000),
+  (1003, 'Pedro Oliveira', 'Oliveira', 'Pedro', '+55 31 9999-8888', 'Rua das Flores, 789', NULL, 'Belo Horizonte', 'MG', '30130-100', 'Brasil', 3, 30000);
+
